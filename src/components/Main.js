@@ -12,6 +12,18 @@ export default class Main extends Component {
     index: -1, //se esse estado for -1, estou criando, se for diferente, estou editando
   };
 
+  componentDidMount() {
+    const tarefas = JSON.parse(localStorage.getItem("tarefas"));
+    if (!tarefas) return;
+    this.setStage({ tarefas });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { tarefas } = this.state;
+    if (tarefas === prevState.tarefas) return;
+    localStorage.setItem("tarefas", JSON.stringify(tarefas));
+  }
+
   handleSubmit = (e) => {
     e.preventDefault(); //evito de atualizar a pagina ao dar submit
     const { tarefas, index } = this.state; //
