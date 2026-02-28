@@ -1,8 +1,6 @@
 import React, { Component } from "react";
-//form
-import { FaPlus } from "react-icons/fa";
-//tarefas
-import { FaEdit, FaWindowClose } from "react-icons/fa";
+import Form from "./Form";
+import Tarefas from "./Tarefas";
 import "./Main.css";
 
 export default class Main extends Component {
@@ -15,7 +13,7 @@ export default class Main extends Component {
   componentDidMount() {
     const tarefas = JSON.parse(localStorage.getItem("tarefas"));
     if (!tarefas) return;
-    this.setStage({ tarefas });
+    this.setState({ tarefas });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -30,6 +28,7 @@ export default class Main extends Component {
     let { novaTarefa } = this.state; //pego o que está no campo
     novaTarefa = novaTarefa.trim(); //elimina os espaços no começo e final
 
+    if (!novaTarefa) return; //verificar se está vazio
     if (tarefas.indexOf(novaTarefa) !== -1) return; //verificar se ela ja existe nas tarefas se é diferente de -1 ele existe
     const novasTarefas = [...tarefas]; //dou spread, copio pra outra variavel n posso manipular tarefas
 
@@ -47,6 +46,7 @@ export default class Main extends Component {
       this.setState({
         tarefas: [...novasTarefas],
         index: -1, //ja editei, então eu volto index pra -1
+        novaTarefa: "",
       });
     }
   };
@@ -83,34 +83,17 @@ export default class Main extends Component {
       <div className="main">
         <h1>Lista de tarefas</h1>
 
-        <form onSubmit={this.handleSubmit} action="#" className="form">
-          <input
-            onChange={this.handleChange}
-            type="text"
-            value={novaTarefa}
-          ></input>
-          <button type="submit">
-            <FaPlus />
-          </button>
-        </form>
+        <Form
+          handleSubmit={this.handleSubmit}
+          handleChange={this.handleChange}
+          novaTarefa={novaTarefa}
+        />
 
-        <ul className="tarefas">
-          {tarefas.map((tarefa, index) => (
-            <li key={tarefa}>
-              {tarefa}
-              <span>
-                <FaEdit
-                  onClick={(e) => this.handleEdit(e, index)} //aqui eu passo o evento por referencia, e o index, o map consegue pegar essas infos
-                  className="edit"
-                />
-                <FaWindowClose
-                  onClick={(e) => this.handleDelete(e, index)}
-                  className="delete"
-                />
-              </span>
-            </li>
-          ))}
-        </ul>
+        <Tarefas
+          tarefas={tarefas}
+          handleEdit={this.handleEdit}
+          handleDelete={this.handleDelete}
+        />
       </div>
     );
   }
